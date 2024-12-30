@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foro CJI Anonm</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #4caf50;
+      --secondary-color: #2196f3;
+      --background-color: #f4f4f4;
+      --text-color: #333;
+      --message-bg-1: #e8f5e9;
+      --message-bg-2: #e3f2fd;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: 
+        linear-gradient(45deg, rgba(76, 175, 80, 0.3), rgba(33, 150, 243, 0.3)),
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(255,255,255,0.1)" width="50" height="50" x="0" y="0" /><rect fill="rgba(255,255,255,0.1)" width="50" height="50" x="50" y="50" /></svg>');
+      background-size: 400% 400%, 100px 100px;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%, 0 0; }
+      50% { background-position: 100% 50%, 50px 50px; }
+      100% { background-position: 0% 50%, 0 0; }
+    }
+
+    .container {
+      max-width: 600px;
+      width: 90%;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 1s ease;
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+      font-size: 2.5em;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--secondary-color);
+      margin-bottom: 30px;
+      font-size: 1.2em;
+      font-weight: 400;
+    }
+
+    #messages {
+      margin-bottom: 20px;
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 15px;
+      background: rgba(250, 250, 250, 0.8);
+    }
+
+    .message {
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 15px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      animation: messageAppear 0.5s ease;
+    }
+
+    @keyframes messageAppear {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message:nth-child(odd) {
+      background: var(--message-bg-1);
+    }
+
+    .message:nth-child(even) {
+      background: var(--message-bg-2);
+    }
+
+    .message:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .message-content {
+      margin-bottom: 10px;
+    }
+
+    .message-timestamp {
+      font-size: 0.8em;
+      color: #777;
+      text-align: right;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 25px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      background: var(--primary-color);
+      color: white;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: var(--secondary-color);
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #error-message {
+      color: #f44336;
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+      animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    #loading {
+      text-align: center;
+      font-size: 1.5em;
+      color: var(--primary-color);
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(76, 175, 80, 0.3);
+      border-radius: 50%;
+      border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Estilos para el popup de reglamentos */
+    #reglamentos-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      max-width: 80%;
+      width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      z-index: 1000;
+      display: none;
+      animation: popupAppear 0.5s ease;
+    }
+
+    @keyframes popupAppear {
+      from { opacity: 0; transform: translate(-50%, -60%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    #reglamentos-popup h3 {
+      color: var(--primary-color);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+    }
+
+    #reglamentos-popup ol {
+      padding-left: 20px;
+    }
+
+    #reglamentos-popup li {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+
+    #close-popup {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-color);
+      transition: color 0.3s ease;
+    }
+
+    #close-popup:hover {
+      color: var(--primary-color);
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 20px;
+      }
+
+      form {
+        flex-direction: column;
+      }
+
+      input[type="text"], button {
+        width: 100%;
+      }
+
+      #reglamentos-popup {
+        width: 90%;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="reglamentos-popup">
+    <h3>Reglamentos</h3>
+    <ol>
+      <li>Únicamente poner Chismes e Indirectas de forma Totalmente ANÓNIMA. En caso de revelar algún que otro nombre, usted será vetado permanentemente del foro CJI.</li>
+      <li>Respetar la privacidad de los demás. No compartir información personal identificable de terceros.</li>
+      <li>Mantener un lenguaje apropiado. Evitar insultos directos o lenguaje excesivamente ofensivo.</li>
+      <li>No hacer spam ni publicar contenido comercial no solicitado.</li>
+      <li>Evitar temas sensibles como política, religión o discriminación de cualquier tipo.</li>
+      <li>La administración se reserva el derecho de eliminar cualquier publicación que viole estas reglas sin previo aviso.</li>
+    </ol>
+    <span id="close-popup">&times;</span>
+  </div>
+
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>Cargando...</p>
+  </div>
+  <div class="container" id="mainContainer">
+    <h1>Foro CJI Anonm</h1>
+    <h2>By: Santi Group & Tomy</h2>
+    <div id="messages"></div>
+    <form id="messageForm">
+      <input type="text" id="messageInput" placeholder="Escribe un mensaje..." required>
+      <button type="submit">Enviar</button>
+    </form>
+    <div id="error-message"></div>
+  </div>
+
+  <script type="module">
+    // Import the functions you need from the SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBquCJ6kPUYED5_J5swZ29UWEZyPIs7Cfo",
+      authDomain: "foro-anonimo-87f08.firebaseapp.com",
+      projectId: "foro-anonimo-87f08",
+      storageBucket: "foro-anonimo-87f08.appspot.com",
+      messagingSenderId: "903922609927",
+      appId: "1:903922609927:web:c0bf7e427c721bcbb49fa2",
+      measurementId: "G-YGCBW98VHV"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Reference to the messages collection
+    const messagesRef = collection(db, "mensajes");
+
+    // Function to format date
+    function formatDate(date) {
+      return new Intl.DateTimeFormat('es', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date);
+    }
+
+    // Function to show main container and hide loading
+    function showMainContainer() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('mainContainer').style.display = 'block';
+    }
+
+    // Function to show reglamentos popup
+    function showReglamentos() {
+      document.getElementById('reglamentos-popup').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('close-popup').style.display = 'block';
+      }, 5000);
+    }
+
+    // Event listener for closing the popup
+    document.getElementById('close-popup').addEventListener('click', () => {
+      document.getElementById('reglamentos-popup').style.display = 'none';
+    });
+
+    // Show reglamentos popup before loading content
+    showReglamentos();
+
+    // Real-time listener to fetch and display messages
+    const messagesContainer = document.getElementById("messages");
+    const q = query(messagesRef, orderBy("timestamp", "desc"));
+    onSnapshot(q, (snapshot) => {
+      messagesContainer.innerHTML = ""; // Clear messages before updating
+      snapshot.forEach((doc) => {
+        const message = doc.data();
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+        
+        const contentElement = document.createElement("div");
+        contentElement.classList.add("message-content");
+        contentElement.textContent = message.content;
+        
+        const timestampElement = document.createElement("div");
+        timestampElement.classList.add("message-timestamp");
+        timestampElement.textContent = formatDate(message.timestamp.toDate());
+        
+        messageElement.appendChild(contentElement);
+        messageElement.appendChild(timestampElement);
+        messagesContainer.appendChild(messageElement);
+      });
+      // Scroll to the top of the messages container (since we're ordering by descending timestamp)
+      messagesContainer.scrollTop = 0;
+      
+      // Show main container after first load
+      showMainContainer();
+    }, (error) => {
+      console.error("Error fetching messages: ", error);
+      document.getElementById('loading').innerHTML = '<p>Error al cargar los mensajes. Por favor, recarga la página.</p>';
+    });
+
+    // Anti-spam variables
+    let lastMessageTime = 0;
+    const spamThreshold = 5000; // 5 seconds
+
+    // Form submission to add a new message
+    const form = document.getElementById("messageForm");
+    const errorMessage = document.getElementById("error-message");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const messageInput = document.getElementById("messageInput");
+      const messageText = messageInput.value.trim();
+
+      const now = Date.now();
+      if (now - lastMessageTime < spamThreshold) {
+        errorMessage.textContent = "Por favor, espera un momento antes de enviar otro mensaje.";
+        return;
+      }
+
+      if (messageText) {
+        try {
+          await addDoc(messagesRef, {
+            content: messageText,
+            timestamp: serverTimestamp()
+          });
+          messageInput.value = ""; // Clear input field
+          lastMessageTime = now;
+          errorMessage.textContent = ""; // Clear any error messages
+        } catch (error) {
+          console.error("Error adding document: ", error);
+          errorMessage.textContent = "Error al enviar el mensaje. Por favor, intenta de nuevo.";
+        }
+      }
+    });
+  </script>
+</body>
+</html>
+
